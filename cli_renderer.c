@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
 
 int width = 20;
 int height = 20;
@@ -10,7 +11,7 @@ char luminosity[] = {' ', '`', '-', '*', '+', '?', 432, '@', 219};
 
 //takes a string of a path to an object file
 //returns a tri array
-float** loadObject(char* fileName){
+float** loadObject(char* fileName){ 
 	FILE* fp;
 	char buff[1024];
 	fp = fopen((const char*) fileName, "r");	
@@ -33,10 +34,12 @@ float** loadObject(char* fileName){
 		switch(buff[0]){ //try fscanf("v %f %f %f ")??
 			case 'v':
 				printf("!v!\n");
-				point = malloc(sizeof(float) * 4);
+				//point = malloc(sizeof(float) * 4);
 
+				/*
 				point[0] = //oh no how do i do this?
 				obj[currentTri] = point;
+				*/
 				//make vertice
 
 
@@ -61,7 +64,7 @@ int main(){
 	printf("test mode:\n");
 
 
-	char* file = "cube.obj";
+	char* file = "cube.smf";
 	loadObject(file);
 
 
