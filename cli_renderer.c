@@ -3,53 +3,109 @@
 #include <string.h>
 #include <stdlib.h>
 
-int width = 20;
-int height = 20;
-char buffer[(20)*(20)];
+#define WIDTH 20
+#define HEIGHT 20
+
+#define DEFAULT_ARR_SIZE 1024
+
+char buffer[(WIDTH)*(HEIGHT)];
 char luminosity[] = {' ', '`', '-', '*', '+', '?', 432, '@', 219};
 
 
-//takes a string of a path to an object file
-//returns a tri array
+/*
+ * takes a string of a path to an object file
+ * returns a tri array
+ * only takes objects defined by triangels
+ */
 float** loadObject(char* fileName){ 
 	FILE* fp;
 	char buff[1024];
-	fp = fopen((const char*) fileName, "r");	
+	float*** obj;
+	float** verts;
+	float x, y, z;
+	int vertList[3];
+	int currentTri, currentVert, numVerts, numTris;
+	int v1, v2, v3;
 
-//tringle: (point, point, point);
-//point: (x, y, z, w);
 
-	float** obj;
-	float* point;
-	int currentTri;
+	fp = fopen((const char*) fileName, "r");
+	
+	if(fp == NULL){
+		fprintf(stderr, "file \"%s\" could not be opened\n", fileName);
+		return (float**) -1;
+	}
 
-	obj = malloc(sizeof(float*) * 1024);
+
+	verts = malloc(sizeof(float**) * 1024);
+	obj = malloc(sizeof(float***) * 1024);
+
+
+	//[[[[x] [y] [z] [w]] [[x] [y] [z] [w]] [[][][]]], [etc]]
+
+	//tringle: (point, point, point);
+	//point: (x, y, z, w); w = 1
+	
 	currentTri = 0;
-
+	currentVert = 0;
 	while(fgets(buff, 1024, fp) != NULL){
 		printf("linebuff: %s\n", buff);	
-
 		printf("|%c|\n", buff[0]);
 
-		switch(buff[0]){ //try fscanf("v %f %f %f ")??
+		switch(buff[0]){
 			case 'v':
 				printf("!v!\n");
-				//point = malloc(sizeof(float) * 4);
+				int test = sscanf(buff, "v %f %f %f", &x, &y, &z);
+				printf("%d\n", test);
+				printf("x:%f y:%f, z:%f\n", x, y, z); //TODO: this does not work sometimes?? figure out why
 
-				/*
-				point[0] = //oh no how do i do this?
-				obj[currentTri] = point;
-				*/
-				//make vertice
-
+				verts[currentVert] = malloc(sizeof(float) * 4);
+				verts[currentVert][0] = x;
+				verts[currentVert][1] = y;
+				verts[currentVert][2] = z;
+				verts[currentVert][3] = 1; //w = 1 
+				currentVert++;
 
 				break;
 			case 'f':
 				printf("!f!\n");
-				//make face
+				sscanf(buff, "f %d %d %d", &v1, &v2, &v3);
+				//printf("f: %d ,%d, %d\n", v1, v2, v3);
+				
+				obj[currentTri] = malloc(sizeof(float*) * 3);
+				obj[currentTri][0] = malloc(sizeof(float) * 4);
+				obj[currentTri][1] = malloc(sizeof(float) * 4);
+				obj[currentTri][2] = malloc(sizeof(float) * 4);
+
+				vertList[0] = v1 - 1;
+				vertList[1] = v2 - 1;
+				vertList[2] = v3 - 1;
+				printf("1\n");
+				for(int i = 0; i < 3; i++){
+					for(int j = 0; j < 3; j++){
+						printf("2\n");
+						obj[currentTri][i][j] = verts[vertList[i]][j];
+					}
+					printf("4\n");
+					obj[currentTri][i][3] = 1; //w = 1
+				}
+				printf("3\n");
+				currentTri++;
 				break;
 		}
 	}
+	for(int i = 0; i < currentVert; i++){
+		printf("vert: x:%f, y:%f, z:%f, w:%f\n", verts[i][0], verts[i][1], verts[i][2], verts[i][3]);
+	}
+	printf("[");
+	for(int i = 0; i < currentTri; i++){
+		if(i != 0){
+			printf(", ");
+		}
+		for(int j = 0; j < 3; j++){
+			printf("[%f, %f, %f, %f]", obj[i][j][0], obj[i][j][1], obj[i][j][2], obj[i][j][3]);
+		}
+	}
+	printf("]");
 
 	fclose(fp);
 }
