@@ -26,7 +26,7 @@ object3D* loadObject(char* fileName){
 	float x, y, z;
 	int vertList[3];
 	int currentTri, currentVert, numVerts, numTris;
-	int v1, v2, v3;
+	int v1, v2, v3, i, j;
 	object3D* obj;
 
 	fp = fopen((const char*) fileName, "r");
@@ -36,41 +36,26 @@ object3D* loadObject(char* fileName){
 		return (object3D*) -1;
 	}
 
-
 	verts = malloc(sizeof(float**) * 1024);
 	tris = malloc(sizeof(float***) * 1024);
 
-
-	//[[[[x] [y] [z] [w]] [[x] [y] [z] [w]] [[][][]]], [etc]]
-
-	//tringle: (point, point, point);
-	//point: (x, y, z, w); w = 1
-	
 	currentTri = 0;
 	currentVert = 0;
 	while(fgets(buff, 1024, fp) != NULL){
-		printf("linebuff: %s\n", buff);	
-		printf("|%c|\n", buff[0]);
-
 		switch(buff[0]){
 			case 'v':
-				printf("!v!\n");
-				int test = sscanf(buff, "v %f %f %f", &x, &y, &z);
-				printf("%d\n", test);
-				printf("x:%f y:%f, z:%f\n", x, y, z); //TODO: this does not work sometimes?? figure out why
+				sscanf(buff, "v %f %f %f", &x, &y, &z);
 
 				verts[currentVert] = malloc(sizeof(float) * 4);
 				verts[currentVert][0] = x;
 				verts[currentVert][1] = y;
 				verts[currentVert][2] = z;
-				verts[currentVert][3] = 1; //w = 1 
+				//verts[currentVert][3] = 1; //w = 1 for all points 
 				currentVert++;
 
 				break;
 			case 'f':
-				printf("!f!\n");
 				sscanf(buff, "f %d %d %d", &v1, &v2, &v3);
-				//printf("f: %d ,%d, %d\n", v1, v2, v3);
 				
 				tris[currentTri] = malloc(sizeof(float*) * 3);
 				tris[currentTri][0] = malloc(sizeof(float) * 4);
@@ -80,36 +65,34 @@ object3D* loadObject(char* fileName){
 				vertList[0] = v1 - 1;
 				vertList[1] = v2 - 1;
 				vertList[2] = v3 - 1;
-				printf("1\n");
-				for(int i = 0; i < 3; i++){
-					for(int j = 0; j < 3; j++){
-						printf("2\n");
+				
+				for(i = 0; i < 3; i++){
+					for(j = 0; j < 3; j++){
 						tris[currentTri][i][j] = verts[vertList[i]][j];
 					}
-					printf("4\n");
-					tris[currentTri][i][3] = 1; //w = 1
+					tris[currentTri][i][3] = 1; //w = 1 for all points
 				}
-				printf("3\n");
 				currentTri++;
 				break;
 		}
 	}
-	for(int i = 0; i < currentVert; i++){
-		printf("vert: x:%f, y:%f, z:%f, w:%f\n", verts[i][0], verts[i][1], verts[i][2], verts[i][3]);
+	for(i = 0; i < currentVert; i++){
 		free(verts[i]);
 	}
 	free(verts);
 
+	/* code to show object that got loaded
 	printf("[");
-	for(int i = 0; i < currentTri; i++){
+	for(i = 0; i < currentTri; i++){
 		if(i != 0){
 			printf(", ");
 		}
-		for(int j = 0; j < 3; j++){
+		for(j = 0; j < 3; j++){
 			printf("[%f, %f, %f, %f]", tris[i][j][0], tris[i][j][1], tris[i][j][2], tris[i][j][3]);
 		}
 	}
 	printf("]\n");
+	*/
 
 	fclose(fp);
 	
@@ -122,7 +105,7 @@ object3D* loadObject(char* fileName){
 void freeObject(object3D* obj){
 	int i, j;
 	for(i = 0; i < obj->triLen; i++){
-		for(j = 0; j < 4; j++){
+		for(j = 0; j < 3; j++){
 			free(obj->tris[i][j]);
 		}
 		free(obj->tris[i]);
@@ -140,8 +123,6 @@ int main(){
 	char* file = "cube.smf";
 	
 	object3D* obj = loadObject(file);
-
-	printf("[1][2][1]: %f\n", obj->tris[1][2][1]);
 
 	freeObject(obj);
 
