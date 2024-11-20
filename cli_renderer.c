@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#include "cli_renderer.h"
 
 #define WIDTH 20
 #define HEIGHT 20
@@ -17,27 +18,27 @@ char luminosity[] = {' ', '`', '-', '*', '+', '?', 432, '@', 219};
  * returns a tri array
  * only takes objects defined by triangels
  */
-float** loadObject(char* fileName){ 
+object3D* loadObject(char* fileName){ 
 	FILE* fp;
 	char buff[1024];
-	float*** obj;
+	float*** tris;
 	float** verts;
 	float x, y, z;
 	int vertList[3];
 	int currentTri, currentVert, numVerts, numTris;
 	int v1, v2, v3;
-
+	object3D* obj;
 
 	fp = fopen((const char*) fileName, "r");
 	
 	if(fp == NULL){
 		fprintf(stderr, "file \"%s\" could not be opened\n", fileName);
-		return (float**) -1;
+		return (object3D*) -1;
 	}
 
 
 	verts = malloc(sizeof(float**) * 1024);
-	obj = malloc(sizeof(float***) * 1024);
+	tris = malloc(sizeof(float***) * 1024);
 
 
 	//[[[[x] [y] [z] [w]] [[x] [y] [z] [w]] [[][][]]], [etc]]
@@ -71,10 +72,10 @@ float** loadObject(char* fileName){
 				sscanf(buff, "f %d %d %d", &v1, &v2, &v3);
 				//printf("f: %d ,%d, %d\n", v1, v2, v3);
 				
-				obj[currentTri] = malloc(sizeof(float*) * 3);
-				obj[currentTri][0] = malloc(sizeof(float) * 4);
-				obj[currentTri][1] = malloc(sizeof(float) * 4);
-				obj[currentTri][2] = malloc(sizeof(float) * 4);
+				tris[currentTri] = malloc(sizeof(float*) * 3);
+				tris[currentTri][0] = malloc(sizeof(float) * 4);
+				tris[currentTri][1] = malloc(sizeof(float) * 4);
+				tris[currentTri][2] = malloc(sizeof(float) * 4);
 
 				vertList[0] = v1 - 1;
 				vertList[1] = v2 - 1;
@@ -83,10 +84,10 @@ float** loadObject(char* fileName){
 				for(int i = 0; i < 3; i++){
 					for(int j = 0; j < 3; j++){
 						printf("2\n");
-						obj[currentTri][i][j] = verts[vertList[i]][j];
+						tris[currentTri][i][j] = verts[vertList[i]][j];
 					}
 					printf("4\n");
-					obj[currentTri][i][3] = 1; //w = 1
+					tris[currentTri][i][3] = 1; //w = 1
 				}
 				printf("3\n");
 				currentTri++;
@@ -102,27 +103,37 @@ float** loadObject(char* fileName){
 			printf(", ");
 		}
 		for(int j = 0; j < 3; j++){
-			printf("[%f, %f, %f, %f]", obj[i][j][0], obj[i][j][1], obj[i][j][2], obj[i][j][3]);
+			printf("[%f, %f, %f, %f]", tris[i][j][0], tris[i][j][1], tris[i][j][2], tris[i][j][3]);
 		}
 	}
-	printf("]");
+	printf("]\n");
 
 	fclose(fp);
+	
+	obj = malloc(sizeof(object3D));
+	obj->tris = tris;
+	obj->triLen = currentTri;
+	return obj;
 }
 
-void freeObject(){
+void freeObject(object3D* obj){
 	//TODO: free the object arrays
 }
 
 
 int main(){
+
 	printf("cli-renderer.c main\n");
 	printf("test mode:\n");
 
 
 	char* file = "cube.smf";
-	loadObject(file);
+	
+	object3D* obj = loadObject(file);
 
+	printf("[1][2][1]: %f\n", obj->tris[1][2][1]);
+
+	freeObject(obj);
 
 	return 0;
 }
