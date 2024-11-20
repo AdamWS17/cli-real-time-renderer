@@ -96,7 +96,10 @@ object3D* loadObject(char* fileName){
 	}
 	for(int i = 0; i < currentVert; i++){
 		printf("vert: x:%f, y:%f, z:%f, w:%f\n", verts[i][0], verts[i][1], verts[i][2], verts[i][3]);
+		free(verts[i]);
 	}
+	free(verts);
+
 	printf("[");
 	for(int i = 0; i < currentTri; i++){
 		if(i != 0){
@@ -117,12 +120,19 @@ object3D* loadObject(char* fileName){
 }
 
 void freeObject(object3D* obj){
-	//TODO: free the object arrays
+	int i, j;
+	for(i = 0; i < obj->triLen; i++){
+		for(j = 0; j < 4; j++){
+			free(obj->tris[i][j]);
+		}
+		free(obj->tris[i]);
+	}
+	free(obj->tris);
+	free(obj);
 }
 
 
 int main(){
-
 	printf("cli-renderer.c main\n");
 	printf("test mode:\n");
 
