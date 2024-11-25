@@ -50,7 +50,6 @@ object3D* loadObject(char* fileName){
 				verts[currentVert][0] = x;
 				verts[currentVert][1] = y;
 				verts[currentVert][2] = z;
-				//verts[currentVert][3] = 1; //w = 1 for all points 
 				currentVert++;
 
 				break;
@@ -114,15 +113,52 @@ void freeObject(object3D* obj){
 	free(obj);
 }
 
+void drawObject(object3D* obj){
+	int i, j, k;
+	printf("\x1b[2J"); //clear the screen
+
+	//TODO: figure out a way to stop this loop with a keybind
+	k = 0;
+	while(k < 100){
+		printf("\x1b[H"); //move cursor to the top of the screen
+		memset(buffer, 32, WIDTH * HEIGHT);
+
+		//right now this draws a 10 x 10 box on the screen
+		//TODO: when the object is projected to viewport coordinates,
+		//change this to draw the object provided in the smf file
+		for(i = 5; i < HEIGHT - 5; i++){
+			for(j = 5; j < WIDTH - 5; j++){
+				buffer[(i*WIDTH)+j] = luminosity[1];
+			}
+		}
+
+		for(i = 0; i < WIDTH * HEIGHT; i++){
+			if((i % WIDTH) != 0){
+				putchar(buffer[i]);
+			}else{
+				putchar(10); //line feed
+			}
+		}
+		usleep(100000);
+		k++;
+	}
+}
 
 int main(){
 	printf("cli-renderer.c main\n");
 	printf("test mode:\n");
 
-
 	char* file = "cube.smf";
 	
 	object3D* obj = loadObject(file);
+
+
+	//TODO: need to map vertices from default viewing plane to viewport
+	//coordnites before drawing object.
+	
+	//mapToViewport()
+	
+	drawObject(obj);
 
 	freeObject(obj);
 
