@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "vector.h"
 
 Vector4 add(Vector4 a, Vector4 b){
@@ -10,7 +11,7 @@ Vector4 add(Vector4 a, Vector4 b){
 	return result;
 }
 
-Vecotr sub(Vecotr a, Vector b){
+Vector4 sub(Vector4 a, Vector4 b){
 	Vector4 result = {
 		a.x - b.x,
 		a.y - b.y,
@@ -45,3 +46,7 @@ Vector4 cross(Vector4 a, Vector4 b){
 	return result;
 }
 
+void printVector4(Vector4 a){
+	printf("vec4: ");
+	printf("[%f %f %f %f]\n", a.x, a.y, a.z, a.w);
+}
