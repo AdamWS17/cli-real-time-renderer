@@ -152,9 +152,9 @@ int main(){
 	Vector4 a = {1.0, .5, 2.3, 0};
 	Vector4 b = {-1.2, .5, 1.7, 0};
 
-	Vector4 c = add(a, b);
+	float r = dot(a, b);
 
-	printf("%f, %f, %f, %f\n", c.x, c.y, c.z, c.w);
+	printf("%f\n", r);
 
 	/*
 	char* file = "cube.smf";
