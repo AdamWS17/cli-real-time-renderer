@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "cli_renderer.h"
 #include "vector.h"
+#include "matrix.h"
 
 #define WIDTH 20
 #define HEIGHT 20
@@ -149,12 +150,22 @@ int main(){
 	printf("cli-renderer.c main\n");
 	printf("test mode:\n");
 
-	Vector4 a = {1.0, .5, 2.3, 0};
-	Vector4 b = {-1.2, .5, 1.7, 0};
+	mat4 matrix;
+	for(int i = 0; i < 4; i++){
+		for(int j = 0; j < 4; j++){
+			matrix.data[i][j] = 2;
+		}
+	}
 
-	float r = dot(a, b);
+	printMatrix4(matrix);
 
-	printf("%f\n", r);
+	Vector4 vec = {
+		1.0,
+		2.5,
+		2.2,
+		0
+	};
+	printVector4(vec);
 
 	/*
 	char* file = "cube.smf";
