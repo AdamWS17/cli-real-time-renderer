@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "cli_renderer.h"
+#include "vector.h"
 
 #define WIDTH 20
 #define HEIGHT 20
@@ -148,11 +149,19 @@ int main(){
 	printf("cli-renderer.c main\n");
 	printf("test mode:\n");
 
+	Vector4 a = {1.0, .5, 2.3, 0};
+	Vector4 b = {-1.2, .5, 1.7, 0};
+
+	Vector4 c = add(a, b);
+
+	printf("%f, %f, %f, %f\n", c.x, c.y, c.z, c.w);
+
+	/*
 	char* file = "cube.smf";
 	
 	object3D* obj = loadObject(file);
 
-
+	
 	//TODO: need to map vertices from default viewing plane to viewport
 	//coordnites before drawing object.
 	
@@ -161,6 +170,8 @@ int main(){
 	drawObject(obj);
 
 	freeObject(obj);
+
+	*/
 
 	return 0;
 }
