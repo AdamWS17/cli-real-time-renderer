@@ -157,15 +157,19 @@ int main(){
 		}
 	}
 
-	printMatrix4(matrix);
+	mat4 m2;
+	for(int i = 0; i < 4; i++){
+		for(int j = 0; j < 4; j++){
+			m2.data[j][i] = j * 1.2;
+		}
+	}
 
-	Vector4 vec = {
-		1.0,
-		2.5,
-		2.2,
-		0
-	};
-	printVector4(vec);
+
+	mat4 result;
+	result = matmult(matrix, m2);
+	printMatrix4(m2);
+	printMatrix4(matrix);
+	printMatrix4(result);
 
 	/*
 	char* file = "cube.smf";

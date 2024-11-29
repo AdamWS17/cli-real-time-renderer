@@ -4,3 +4,4 @@ typedef struct {
 
 
 void printMatrix4(mat4);
+mat4 matmult(mat4 a, mat4 b);
